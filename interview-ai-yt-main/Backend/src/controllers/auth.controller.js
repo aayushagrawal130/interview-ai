@@ -39,14 +39,15 @@ async function registerUserController(req, res) {
     const token = jwt.sign(
         { id: user._id, username: user.username },
         process.env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "30d" }
     )
 
     res.cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        partitioned: true
+        partitioned: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000
     })
 
 
@@ -90,14 +91,15 @@ async function loginUserController(req, res) {
     const token = jwt.sign(
         { id: user._id, username: user.username },
         process.env.JWT_SECRET,
-        { expiresIn: "1d" }
+        { expiresIn: "30d" }
     )
 
     res.cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        partitioned: true
+        partitioned: true,
+        maxAge: 30 * 24 * 60 * 60 * 1000
     })
     res.status(200).json({
         message: "User loggedIn successfully.",
@@ -153,10 +155,7 @@ async function getMeController(req, res) {
             email: user.email
         }
     })
-
 }
-
-
 
 module.exports = {
     registerUserController,
