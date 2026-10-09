@@ -98,20 +98,28 @@ async function generateResumePdf({ resume, selfDescription, jobDescription }) {
                         The resume should ideally be 1-2 pages long. Focus on quality rather than quantity.
                     `
 
-    const response = await ai.models.generateContent({
-        model: "gemini-3-flash-preview",
-        contents: prompt,
-        config: {
-            responseMimeType: "application/json",
-            responseSchema: zodToJsonSchema(resumePdfSchema),
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-3-flash-preview",
+            contents: prompt,
+            config: {
+                responseMimeType: "application/json",
+                responseSchema: zodToJsonSchema(resumePdfSchema),
+            }
+        });
+
+        let rawText = response.text.trim();
+        // Remove markdown blocks if present
+        if (rawText.startsWith("```")) {
+            rawText = rawText.replace(/^```(json|html)?\n/g, "").replace(/\n```$/g, "").trim();
         }
-    })
 
-
-    const rawText = response.text.replace(/```json/g, "").replace(/```/g, "").trim();
-    const jsonContent = JSON.parse(rawText)
-
-    return jsonContent.html
+        const jsonContent = JSON.parse(rawText);
+        return jsonContent.html || "<p>Failed to extract HTML</p>";
+    } catch (error) {
+        console.error("AI Generation Error in generateResumePdf:", error);
+        throw error;
+    }
 }
 
 module.exports = { generateInterviewReport, generateResumePdf }

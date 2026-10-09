@@ -12,8 +12,8 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const getAndSetUser = async () => {
             try {
-                // We fetch manually to avoid circular dependencies
-                const response = await fetch("/api/auth/get-me", {credentials: "include"});
+                const API_URL = import.meta.env.VITE_API_URL || "";
+                const response = await fetch(`${API_URL}/api/auth/get-me`, {credentials: "include"});
                 if (response.ok) {
                     const data = await response.json();
                     setUser(data.user);
