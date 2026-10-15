@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react'
 import "../style/home.scss"
 import { useInterview } from '../hooks/useInterview.js'
+import { useAuth } from '../../auth/hooks/useAuth.js'
 import { useNavigate } from 'react-router'
 
 const Home = () => {
 
     const { loading, generateReport,reports } = useInterview()
+    const { user, handleLogout } = useAuth()
     const [ jobDescription, setJobDescription ] = useState("")
     const [ selfDescription, setSelfDescription ] = useState("")
     const [ fileName, setFileName ] = useState("")
@@ -31,6 +33,25 @@ const Home = () => {
 
     return (
         <div className='home-page'>
+
+            {/* Top Navbar */}
+            <nav className='home-navbar'>
+                <div className='nav-brand'>
+                    <span className='brand-icon'>🎯</span>
+                    <span className='brand-title'>Interview <span className='highlight'>AI</span></span>
+                </div>
+                <div className='nav-actions'>
+                    {user && (
+                        <span className='nav-user'>
+                            👤 {user.username}
+                        </span>
+                    )}
+                    <button onClick={handleLogout} className='logout-button' title="Logout">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Logout
+                    </button>
+                </div>
+            </nav>
 
             {/* Page Header */}
             <header className='page-header'>
