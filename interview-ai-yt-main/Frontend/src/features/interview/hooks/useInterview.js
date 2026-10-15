@@ -8,6 +8,7 @@ export const useInterview = () => {
 
     const context = useContext(InterviewContext)
     const { interviewId } = useParams()
+    const [ downloadLoading, setDownloadLoading ] = useState(false)
 
     if (!context) {
         throw new Error("useInterview must be used within an InterviewProvider")
@@ -38,13 +39,15 @@ export const useInterview = () => {
         let response = null
         try {
             response = await getInterviewReportById(interviewId)
-            setReport(response.interviewReport)
+            if (response && response.interviewReport) {
+                setReport(response.interviewReport)
+            }
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
-        return response.interviewReport
+        return response?.interviewReport || null
     }
 
     const getReports = async () => {
@@ -52,18 +55,20 @@ export const useInterview = () => {
         let response = null
         try {
             response = await getAllInterviewReports()
-            setReports(response.interviewReports)
+            if (response && response.interviewReports) {
+                setReports(response.interviewReports)
+            }
         } catch (error) {
             console.log(error)
         } finally {
             setLoading(false)
         }
 
-        return response.interviewReports
+        return response?.interviewReports || []
     }
 
     const getResumePdf = async (interviewReportId) => {
-        setLoading(true)
+        setDownloadLoading(true)
         let response = null
         try {
             response = await generateResumePdf({ interviewReportId })
@@ -81,7 +86,7 @@ export const useInterview = () => {
             console.log(error)
             alert("Failed to download PDF. The AI service might be busy. Please try again.")
         } finally {
-            setLoading(false)
+            setDownloadLoading(false)
         }
     }
 
@@ -93,6 +98,6 @@ export const useInterview = () => {
         }
     }, [ interviewId ])
 
-    return { loading, report, reports, generateReport, getReportById, getReports, getResumePdf }
+    return { loading, downloadLoading, report, reports, generateReport, getReportById, getReports, getResumePdf }
 
 }
